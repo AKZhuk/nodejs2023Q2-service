@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DB } from 'src/db';
-import { generateID, throwNotFoundError, validateUUID } from 'src/helpers';
+import { generateID } from 'src/helpers';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { Artist, WithId } from 'src/types';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 
 @Injectable()
 export class ArtistService {
@@ -13,10 +14,9 @@ export class ArtistService {
   }
 
   get(id: string): WithId<Artist> {
-    validateUUID(id);
     const artist = DB.artist.get(id);
     if (!artist) {
-      throwNotFoundError('artist');
+      throw new NotFoundException();
     }
 
     return { ...artist, id };
@@ -29,11 +29,10 @@ export class ArtistService {
     return { id, ...dto };
   }
 
-  update(id: string, dto: Artist) {
-    validateUUID(id);
+  update(id: string, dto: UpdateArtistDto) {
     const artist = DB.artist.get(id);
     if (!artist) {
-      throwNotFoundError('artist');
+      throw new NotFoundException();
     }
     DB.artist.set(id, { ...artist, ...dto });
     const updatedArtist = DB.artist.get(id);
@@ -41,10 +40,9 @@ export class ArtistService {
   }
 
   delete(id: string) {
-    validateUUID(id);
     const artist = DB.artist.delete(id);
     if (!artist) {
-      throwNotFoundError('artist');
+      throw new NotFoundException();
     }
     this.deleteReferences(id);
   }

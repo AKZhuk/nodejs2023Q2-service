@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DB } from 'src/db';
-import { generateID, throwNotFoundError, validateUUID } from 'src/helpers';
-import { Track } from 'src/types';
+import { generateID } from 'src/helpers';
 import { CreateTrackDto } from './dto/create-track.dto';
+import { UpdateTrackDto } from './dto/update-track.dto';
 
 @Injectable()
 export class TrackService {
@@ -13,10 +13,9 @@ export class TrackService {
   }
 
   get(id: string) {
-    validateUUID(id);
     const track = DB.track.get(id);
     if (!track) {
-      throwNotFoundError('track');
+      throw new NotFoundException();
     }
 
     return { ...track, id };
@@ -29,11 +28,10 @@ export class TrackService {
     return { id, ...dto };
   }
 
-  update(id: string, dto: Track) {
-    validateUUID(id);
+  update(id: string, dto: UpdateTrackDto) {
     const track = DB.track.get(id);
     if (!track) {
-      throwNotFoundError('track');
+      throw new NotFoundException();
     }
     DB.track.set(id, { ...track, ...dto });
 
@@ -41,10 +39,9 @@ export class TrackService {
   }
 
   delete(id: string) {
-    validateUUID(id);
     const track = DB.track.delete(id);
     if (!track) {
-      throwNotFoundError('track');
+      throw new NotFoundException();
     }
     this.deleteReferences(id);
   }

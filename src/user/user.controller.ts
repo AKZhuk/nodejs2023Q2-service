@@ -7,10 +7,12 @@ import {
   Post,
   Body,
   Put,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
+import { ApiParam } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -22,7 +24,7 @@ export class UserController {
   }
 
   @Get(':id')
-  get(@Param('id') id: string) {
+  get(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.userService.get(id);
   }
 
@@ -32,16 +34,18 @@ export class UserController {
   }
 
   @Put(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateUserDto: UpdatePasswordDto,
   ) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  delete(@Param('id', new ParseUUIDPipe()) id: string) {
     this.userService.delete(id);
   }
 }

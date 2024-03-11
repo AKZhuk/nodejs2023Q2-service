@@ -5,12 +5,14 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { ApiParam } from '@nestjs/swagger';
 
 @Controller('track')
 export class TrackController {
@@ -22,7 +24,8 @@ export class TrackController {
   }
 
   @Get(':id')
-  get(@Param('id') id: string) {
+  @ApiParam({ name: 'id', format: 'uuid' })
+  get(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.trackService.get(id);
   }
 
@@ -32,16 +35,18 @@ export class TrackController {
   }
 
   @Put(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
     return this.trackService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  delete(@Param('id', new ParseUUIDPipe()) id: string) {
     this.trackService.delete(id);
   }
 }

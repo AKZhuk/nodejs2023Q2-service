@@ -1,6 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DB } from 'src/db';
-import { throwNotFoundError, validateUUID } from 'src/helpers';
 import { FavoritesKey } from 'src/types';
 
 @Injectable()
@@ -21,7 +25,6 @@ export class FavoritesService {
   }
 
   add(type: FavoritesKey, id: string) {
-    validateUUID(id);
     if (!DB[type].has(id)) {
       throw new HttpException(
         `${type} with id ${id} not found`,
@@ -34,7 +37,7 @@ export class FavoritesService {
   delete(type: FavoritesKey, id: string) {
     const favorite = DB.favorites[type].delete(id);
     if (!favorite) {
-      throwNotFoundError(type);
+      throw new NotFoundException();
     }
   }
 }

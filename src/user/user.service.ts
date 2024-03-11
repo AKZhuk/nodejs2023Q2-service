@@ -1,12 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DB } from 'src/db';
 import { CreateUserDto } from './dto/create-user.dto';
-import {
-  generateID,
-  getTimestamp,
-  throwNotFoundError,
-  validateUUID,
-} from 'src/helpers';
+import { generateID, getTimestamp } from 'src/helpers';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -14,17 +14,15 @@ export class UserService {
   getAll() {
     return Array.from(DB.users.entries()).map(([id, user]) => {
       const { password, ...userWithoutPassword } = user;
-      console.log('ssds', id, user);
 
       return { id, ...userWithoutPassword };
     });
   }
 
   get(id: string) {
-    validateUUID(id);
     const user = DB.users.get(id);
     if (!user) {
-      throwNotFoundError('user');
+      throw new NotFoundException();
     }
     const { password, ...rest } = user;
     return { id, ...rest };
@@ -44,10 +42,9 @@ export class UserService {
   }
 
   update(id: string, dto: UpdatePasswordDto) {
-    validateUUID(id);
     const user = DB.users.get(id);
     if (!user) {
-      throwNotFoundError('user');
+      throw new NotFoundException();
     }
     if (user.password === dto.oldPassword) {
       DB.users.set(id, {
@@ -67,10 +64,9 @@ export class UserService {
   }
 
   delete(id: string) {
-    validateUUID(id);
     const user = DB.users.delete(id);
     if (!user) {
-      throwNotFoundError('user');
+      throw new NotFoundException();
     }
   }
 }

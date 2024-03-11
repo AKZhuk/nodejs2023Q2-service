@@ -9,7 +9,7 @@ export interface UserWithId extends User {
   id: string; // uuid v4
 }
 
-export type WithId<T extends {}> = T & {
+export type WithId<T> = T & {
   id: string; // uuid v4
 };
 

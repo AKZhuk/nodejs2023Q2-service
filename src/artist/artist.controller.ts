@@ -5,12 +5,14 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { ApiParam } from '@nestjs/swagger';
 
 @Controller('artist')
 export class ArtistController {
@@ -22,7 +24,8 @@ export class ArtistController {
   }
 
   @Get(':id')
-  get(@Param('id') id: string) {
+  @ApiParam({ name: 'id', format: 'uuid' })
+  get(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.artistService.get(id);
   }
 
@@ -32,16 +35,18 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
     return this.artistService.update(id, updateArtistDto);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id', format: 'uuid' })
   @HttpCode(204)
-  delete(@Param('id') id: string) {
+  delete(@Param('id', new ParseUUIDPipe()) id: string) {
     this.artistService.delete(id);
   }
 }

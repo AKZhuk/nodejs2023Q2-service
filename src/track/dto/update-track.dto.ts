@@ -1,25 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateTrackDto } from './create-track.dto';
 
-export class UpdateTrackDto {
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  artistId: string | null; // refers to Artist
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  albumId: string | null; // refers to Album
-
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  duration: number;
-}
+export class UpdateTrackDto extends PartialType(CreateTrackDto) {}
