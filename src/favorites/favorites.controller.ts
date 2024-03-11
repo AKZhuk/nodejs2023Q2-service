@@ -3,13 +3,11 @@ import {
   Delete,
   Get,
   HttpCode,
-  Logger,
   Param,
   ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { FavoritesKey } from 'src/types';
 import { ApiParam } from '@nestjs/swagger';
 
 @Controller('favs')
@@ -22,26 +20,47 @@ export class FavoritesController {
   }
 
   @HttpCode(201)
-  @ApiParam({ enum: ['artist', 'album', 'track'], name: 'type' })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @Post(':type/:id')
-  async add(
-    @Param('type') type: FavoritesKey,
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ) {
-    Logger.warn('collection', type, id);
-    this.favoritesService.add(type, id);
-    return `Successfully added ${type} with id ${id} in favorites`;
+  @Post('/artist/:id')
+  async addArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    this.favoritesService.add('artist', id);
+    return `Successfully added artist with id ${id} in favorites`;
+  }
+
+  @HttpCode(201)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @Post('/track/:id')
+  async addTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    this.favoritesService.add('track', id);
+    return `Successfully added track with id ${id} in favorites`;
+  }
+
+  @HttpCode(201)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @Post('/album/:id')
+  async addAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    this.favoritesService.add('album', id);
+    return `Successfully added album with id ${id} in favorites`;
   }
 
   @HttpCode(204)
-  @ApiParam({ enum: ['artist', 'album', 'track'], name: 'type' })
   @ApiParam({ name: 'id', format: 'uuid' })
-  @Delete(':type/:id')
-  delete(
-    @Param('type') type: FavoritesKey,
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ) {
-    this.favoritesService.delete(type, id);
+  @Delete('/track/:id')
+  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    this.favoritesService.delete('track', id);
+  }
+
+  @HttpCode(204)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @Delete('/album/:id')
+  deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    this.favoritesService.delete('album', id);
+  }
+
+  @HttpCode(204)
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @Delete('/artist/:id')
+  deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    this.favoritesService.delete('artist', id);
   }
 }
