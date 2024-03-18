@@ -19,7 +19,7 @@ import { TrackEntity } from 'src/track/entities/track.entity';
 
 @Entity()
 export class FavoriteArtist {
-  constructor (artist: ArtistEntity) {
+  constructor(artist: ArtistEntity) {
     this.artist = artist;
   }
 
@@ -32,7 +32,7 @@ export class FavoriteArtist {
 
 @Entity()
 export class FavoriteTrack {
-  constructor (track: TrackEntity) {
+  constructor(track: TrackEntity) {
     this.track = track;
   }
 
@@ -45,7 +45,7 @@ export class FavoriteTrack {
 
 @Entity()
 export class FavoriteAlbum {
-  constructor (album: AlbumEntity) {
+  constructor(album: AlbumEntity) {
     this.album = album;
   }
 
