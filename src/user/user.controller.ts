@@ -19,18 +19,18 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAll() {
-    return this.userService.getAll();
+  async getAll() {
+    return await this.userService.getAll();
   }
 
   @Get(':id')
-  get(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.userService.get(id);
+  async get(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.userService.get(id);
   }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+    return await this.userService.create(createUserDto);
   }
 
   @Put(':id')
@@ -39,13 +39,13 @@ export class UserController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateUserDto: UpdatePasswordDto,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return await this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id', format: 'uuid' })
   @HttpCode(204)
-  delete(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.userService.delete(id);
+  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
+    await this.userService.delete(id);
   }
 }

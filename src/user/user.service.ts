@@ -4,57 +4,48 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DB } from 'src/db';
 import { CreateUserDto } from './dto/create-user.dto';
-import { generateID, getTimestamp } from 'src/helpers';
 import { UpdatePasswordDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  getAll() {
-    return Array.from(DB.users.entries()).map(([id, user]) => {
-      const { password, ...userWithoutPassword } = user;
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
 
-      return { id, ...userWithoutPassword };
-    });
+  async getAll() {
+    const users = await this.userRepository.find();
+    return users.map((user) => user.toResponse());
   }
 
-  get(id: string) {
-    const user = DB.users.get(id);
+  async get(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException();
     }
-    const { password, ...rest } = user;
-    return { id, ...rest };
+    return user.toResponse();
   }
 
-  create(dto: CreateUserDto) {
-    const id = generateID();
-    const timeStamp = getTimestamp();
-    DB.users.set(id, {
-      ...dto,
-      createdAt: timeStamp,
-      updatedAt: timeStamp,
-      version: 1,
-    });
-    const { password, ...user } = DB.users.get(id);
-    return { id, ...user };
+  async create(dto: CreateUserDto) {
+    const user = this.userRepository.create(dto);
+    return (await this.userRepository.save(user)).toResponse();
   }
 
-  update(id: string, dto: UpdatePasswordDto) {
-    const user = DB.users.get(id);
+  async update(id: string, dto: UpdatePasswordDto) {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException();
     }
     if (user.password === dto.oldPassword) {
-      DB.users.set(id, {
+      await this.userRepository.save({
         ...user,
         password: dto.newPassword,
-        version: user.version + 1,
-        updatedAt: getTimestamp(),
       });
-      const { password, ...rest } = DB.users.get(id);
-      return { id, ...rest };
+      return await this.get(id);
     } else {
       throw new HttpException(
         'Forbidden. User password is invalid',
@@ -63,9 +54,9 @@ export class UserService {
     }
   }
 
-  delete(id: string) {
-    const user = DB.users.delete(id);
-    if (!user) {
+  async delete(id: string) {
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException();
     }
   }

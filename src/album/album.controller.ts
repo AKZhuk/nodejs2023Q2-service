@@ -19,19 +19,19 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Get()
-  getAll() {
-    return this.albumService.getAll();
+  async getAll() {
+    return await this.albumService.getAll();
   }
 
   @Get(':id')
   @ApiParam({ name: 'id', format: 'uuid' })
-  get(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.albumService.get(id);
+  async get(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.albumService.get(id);
   }
 
   @Post()
   async create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumService.create(createAlbumDto);
+    return await this.albumService.create(createAlbumDto);
   }
 
   @Put(':id')
@@ -40,13 +40,13 @@ export class AlbumController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    return this.albumService.update(id, updateAlbumDto);
+    return await this.albumService.update(id, updateAlbumDto);
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id', format: 'uuid' })
   @HttpCode(204)
-  delete(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.albumService.delete(id);
+  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
+    await this.albumService.delete(id);
   }
 }

@@ -1,59 +1,63 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DB } from 'src/db';
-import { generateID } from 'src/helpers';
 import { CreateArtistDto } from './dto/create-artist.dto';
-import { Artist, WithId } from 'src/types';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ArtistEntity } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistService {
-  getAll(): WithId<Artist>[] {
-    return Array.from(DB.artist.entries()).map(([id, artist]) => {
-      return { id, ...artist };
-    });
+  constructor(
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>,
+  ) {}
+
+  async getAll() {
+    const artists = await this.artistRepository.find();
+    return artists;
   }
 
-  get(id: string): WithId<Artist> {
-    const artist = DB.artist.get(id);
+  async get(id: string) {
+    const artist = await this.artistRepository.findOneBy({ id });
     if (!artist) {
       throw new NotFoundException();
     }
-
-    return { ...artist, id };
+    return artist;
   }
 
-  create(dto: CreateArtistDto) {
-    const id = generateID();
-    DB.artist.set(id, dto);
-
-    return { id, ...dto };
+  async create(dto: CreateArtistDto) {
+    const artist = this.artistRepository.create(dto);
+    return await this.artistRepository.save(artist);
   }
 
-  update(id: string, dto: UpdateArtistDto) {
-    const artist = DB.artist.get(id);
+  async update(id: string, dto: UpdateArtistDto) {
+    const artist = await this.artistRepository.findOneBy({ id });
     if (!artist) {
       throw new NotFoundException();
     }
-    DB.artist.set(id, { ...artist, ...dto });
-    const updatedArtist = DB.artist.get(id);
-    return { id, ...updatedArtist };
+    await this.artistRepository.save({
+      ...artist,
+      ...dto,
+    });
+    return await this.get(id);
   }
 
-  delete(id: string) {
-    const artist = DB.artist.delete(id);
-    if (!artist) {
+  async delete(id: string) {
+    const result = await this.artistRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException();
     }
-    this.deleteReferences(id);
-  }
-  deleteReferences(id: string) {
-    DB.track.forEach((track) => {
-      track.artistId = track.artistId === id ? null : track.artistId;
-    });
-    DB.album.forEach((album) => {
-      album.artistId = album.artistId === id ? null : album.artistId;
-    });
 
-    DB.favorites.artist.delete(id);
+    // this.deleteReferences(id);
   }
+  // deleteReferences(id: string) {
+  //   DB.track.forEach((track) => {
+  //     track.artistId = track.artistId === id ? null : track.artistId;
+  //   });
+  //   DB.album.forEach((album) => {
+  //     album.artistId = album.artistId === id ? null : album.artistId;
+  //   });
+
+  //   DB.favorites.artist.delete(id);
+  // }
 }
