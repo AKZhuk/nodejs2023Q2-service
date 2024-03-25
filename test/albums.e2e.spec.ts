@@ -177,7 +177,6 @@ describe('Album (e2e)', () => {
         });
 
       expect(updateResponse.statusCode).toBe(StatusCodes.OK);
-
       const { id: updatedId, name, year, artistId } = updateResponse.body;
 
       expect(name).toBe(createAlbumDto.name);

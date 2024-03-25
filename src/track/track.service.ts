@@ -1,51 +1,50 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DB } from 'src/db';
-import { generateID } from 'src/helpers';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TrackEntity } from './entities/track.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TrackService {
-  getAll() {
-    return Array.from(DB.track.entries()).map(([id, track]) => {
-      return { id, ...track };
+  constructor(
+    @InjectRepository(TrackEntity)
+    private trackRepository: Repository<TrackEntity>,
+  ) {}
+
+  async getAll() {
+    const tracks = await this.trackRepository.find();
+    return tracks;
+  }
+
+  async get(id: string) {
+    const track = await this.trackRepository.findOneBy({ id });
+    if (!track) {
+      throw new NotFoundException();
+    }
+    return track;
+  }
+
+  async create(dto: CreateTrackDto) {
+    const track = this.trackRepository.create(dto);
+    return await this.trackRepository.save(track);
+  }
+
+  async update(id: string, dto: UpdateTrackDto) {
+    const track = await this.trackRepository.findOneBy({ id });
+    if (!track) {
+      throw new NotFoundException();
+    }
+    await this.trackRepository.save({
+      ...track,
+      ...dto,
     });
+    return await this.get(id);
   }
-
-  get(id: string) {
-    const track = DB.track.get(id);
-    if (!track) {
+  async delete(id: string) {
+    const result = await this.trackRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException();
     }
-
-    return { ...track, id };
-  }
-
-  create(dto: CreateTrackDto) {
-    const id = generateID();
-    DB.track.set(id, dto);
-
-    return { id, ...dto };
-  }
-
-  update(id: string, dto: UpdateTrackDto) {
-    const track = DB.track.get(id);
-    if (!track) {
-      throw new NotFoundException();
-    }
-    DB.track.set(id, { ...track, ...dto });
-
-    return { id, ...DB.track.get(id) };
-  }
-
-  delete(id: string) {
-    const track = DB.track.delete(id);
-    if (!track) {
-      throw new NotFoundException();
-    }
-    this.deleteReferences(id);
-  }
-  deleteReferences(id: string) {
-    DB.favorites.track.delete(id);
   }
 }

@@ -1,0 +1,9 @@
+node_modules
+/dist
+/doc/**
+.dockerignore
+Dockerfile
+docker-compose.yaml
+pgadmin-data
+**/.git
+**/.gitignore
