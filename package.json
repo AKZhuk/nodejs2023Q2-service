@@ -21,7 +21,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "typeorm": "typeorm-ts-node-commonjs",
-    "migration:run": "npm run typeorm -- migration:run"
+    "migration:run": "npm run typeorm -- migration:run",
+    "docker:build": "docker-compose up --build",
+    "docker-audit": "docker scout cves --details local://nodejs2023q2-service-app:latest"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
