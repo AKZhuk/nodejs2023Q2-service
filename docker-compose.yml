@@ -17,7 +17,7 @@ services:
       - some-net
     depends_on:
       - db
-    restart: always
+    restart: on-failure
   db:
     container_name: postgress-db
     image: postgres
@@ -31,7 +31,7 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     networks:
       - some-net
-    restart: always
+    restart: on-failure
   pgadmin:
     image: dpage/pgadmin4
     restart: always
