@@ -46,11 +46,5 @@ export class TrackService {
     if (result.affected === 0) {
       throw new NotFoundException();
     }
-
-    // this.deleteReferences(id);
   }
-
-  // deleteReferences(id: string) {
-  //   DB.favorites.track.delete(id);
-  // }
 }

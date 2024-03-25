@@ -1,4 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -14,7 +14,6 @@ export class AlbumEntity {
   year: number;
 
   @ManyToOne(() => ArtistEntity, null, { onDelete: 'SET NULL', eager: true })
-  @Expose({ name: 'artistId' })
   @Transform(({ value }) => (value ? value.id : null))
   artistId: string | null; // refers to Artist
 }

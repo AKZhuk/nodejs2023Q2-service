@@ -46,14 +46,5 @@ export class AlbumService {
     if (result.affected === 0) {
       throw new NotFoundException();
     }
-
-    // this.deleteReferences(id);
   }
-
-  // deleteReferences(id: string) {
-  //   DB.track.forEach((track) => {
-  //     track.albumId = track.albumId === id ? null : track.albumId;
-  //   });
-  //   DB.favorites.album.delete(id);
-  // }
 }

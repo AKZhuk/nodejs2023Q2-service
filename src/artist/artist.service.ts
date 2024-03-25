@@ -47,17 +47,5 @@ export class ArtistService {
     if (result.affected === 0) {
       throw new NotFoundException();
     }
-
-    // this.deleteReferences(id);
   }
-  // deleteReferences(id: string) {
-  //   DB.track.forEach((track) => {
-  //     track.artistId = track.artistId === id ? null : track.artistId;
-  //   });
-  //   DB.album.forEach((album) => {
-  //     album.artistId = album.artistId === id ? null : album.artistId;
-  //   });
-
-  //   DB.favorites.artist.delete(id);
-  // }
 }

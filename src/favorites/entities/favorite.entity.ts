@@ -1,24 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Expose, Transform } from 'class-transformer';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { AlbumEntity } from 'src/album/entities/album.entity';
 import { TrackEntity } from 'src/track/entities/track.entity';
 
-// @Entity()
-// export class FavoriteEntity {
-//   @ManyToOne(() => ArtistEntity, null, { onDelete: 'SET NULL', eager: true })
-//   @Expose({ name: 'artistId' })
-//   @Transform(({ value }) => (value ? value.id : null))
-//   artistId: string[];
-
-//   @ManyToOne(() => AlbumEntity, null, { onDelete: 'SET NULL', eager: true })
-//   @Expose({ name: 'albumId' })
-//   @Transform(({ value }) => (value ? value.id : null))
-//   albumId: string[];
-// }
-
 @Entity()
-export class FavoriteArtist {
+export class FavoriteArtistEntity {
   constructor(artist: ArtistEntity) {
     this.artist = artist;
   }
@@ -26,12 +18,19 @@ export class FavoriteArtist {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => ArtistEntity, null, { onDelete: 'CASCADE' })
+  @Column({ name: 'artist_id', type: 'uuid' })
+  artistId: string | null;
+
+  @OneToOne(() => ArtistEntity, (artist) => artist.id, {
+    onDelete: 'CASCADE',
+    eager: false,
+  })
+  @JoinColumn({ name: 'artist_id', referencedColumnName: 'id' })
   artist: ArtistEntity;
 }
 
 @Entity()
-export class FavoriteTrack {
+export class FavoriteTrackEntity {
   constructor(track: TrackEntity) {
     this.track = track;
   }
@@ -39,12 +38,19 @@ export class FavoriteTrack {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => TrackEntity, null, { onDelete: 'CASCADE' })
+  @Column({ name: 'track_id', type: 'uuid' })
+  trackId: string | null;
+
+  @OneToOne(() => TrackEntity, (track) => track.id, {
+    onDelete: 'CASCADE',
+    eager: false,
+  })
+  @JoinColumn({ name: 'track_id', referencedColumnName: 'id' })
   track: TrackEntity;
 }
 
 @Entity()
-export class FavoriteAlbum {
+export class FavoriteAlbumEntity {
   constructor(album: AlbumEntity) {
     this.album = album;
   }
@@ -52,6 +58,13 @@ export class FavoriteAlbum {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => AlbumEntity, null, { onDelete: 'CASCADE' })
+  @Column({ name: 'album_id', type: 'uuid' })
+  albumId: string | null;
+
+  @OneToOne(() => AlbumEntity, (album) => album.id, {
+    onDelete: 'CASCADE',
+    eager: false,
+  })
+  @JoinColumn({ name: 'album_id', referencedColumnName: 'id' })
   album: AlbumEntity;
 }

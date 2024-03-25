@@ -10,6 +10,11 @@ import { UserEntity } from './user/entities/user.entity';
 import { ArtistEntity } from './artist/entities/artist.entity';
 import { AlbumEntity } from './album/entities/album.entity';
 import { TrackEntity } from './track/entities/track.entity';
+import {
+  FavoriteAlbumEntity,
+  FavoriteArtistEntity,
+  FavoriteTrackEntity,
+} from './favorites/entities/favorite.entity';
 
 @Module({
   imports: [
@@ -26,7 +31,15 @@ import { TrackEntity } from './track/entities/track.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [UserEntity, ArtistEntity, AlbumEntity, TrackEntity],
+      entities: [
+        UserEntity,
+        ArtistEntity,
+        AlbumEntity,
+        TrackEntity,
+        FavoriteAlbumEntity,
+        FavoriteArtistEntity,
+        FavoriteTrackEntity,
+      ],
       // migrationsTableName: 'migration',
       // migrations: [
       //   __dirname + '/migration/**/*.ts',
