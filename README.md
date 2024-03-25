@@ -11,19 +11,39 @@
 git clone {repository URL}
 ```
 
+## Switch branch
+```
+git checkout feat-postgres-docker
+```
+
+## Create .env file by using .env.example
+
 ## Installing NPM modules
 
 ```
 npm install
 ```
 
+## Docker-compose
+
+```
+docker compose up --build
+```
+
+## Docker check for vulnerabilities
+
+```
+npm run docker-audit
+```
+
+## PGAdmin
+http://localhost:5050/login?next=%2F
+
 ## Running application
 
 ```
 npm start
 ```
-
-Please create `.env` file in the root and add `PORT=4000` to it!
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
